@@ -100,3 +100,237 @@
   font-size: 18px;
   margin-right: 7px;
 }
+
+.room__item-booking-form {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  height: 500px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  background-color: #fff;
+  border-radius: 1rem;
+  z-index: 99;
+}
+
+.room__item-booking-form::-webkit-scrollbar {
+  width: 10px;
+  border-top-right-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+  background-color: #dadbbd;
+}
+
+.room__item-booking-form::-webkit-scrollbar-thumb {
+  background-color: #151d3b;
+  border-top-right-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+  width: 7px;
+}
+
+.room__item-booking-info {
+  display: flex;
+  padding: 25px 20px 15px;
+}
+
+.room__item-booking-info img {
+  width: 150px;
+  height: 170px;
+  object-fit: cover;
+  margin-right: 15px;
+}
+
+.room__item-booking-info-details {
+  display: flex;
+  flex-direction: column;
+  height: 170px;
+  min-width: 195px;
+  justify-content: space-between;
+}
+
+.room__item-booking-info_title {
+  font-size: 18px;
+  font-weight: 700;
+  text-align: start;
+  text-transform: capitalize;
+  margin: 0.7rem 0;
+}
+
+.room__item-booking-info_price {
+  font-size: 15px;
+  font-weight: 700;
+  text-align: end;
+  color: #151d3b;
+  margin-bottom: 10px;
+}
+
+.room__item-booking-info_price span {
+  font-size: 13px;
+  font-weight: 300;
+  text-decoration: underline;
+  margin-right: 5px;
+}
+
+.room__item-booking-info-details > div:last-child {
+  display: grid;
+  height: 75px;
+  grid-template-rows: repeat(3, 1fr);
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.room__item-booking-info-details > div > div {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.room__item-booking-info-details > div > div svg {
+  margin-right: 5px;
+  font-size: 18px;
+}
+
+.room__item-booking-datepicker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 25px;
+}
+
+.room__item-booking-datepicker > div,
+.room__item-booking-input {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.room__item-booking-datepicker label,
+.room__item-booking-input label {
+  font-size: 13px;
+  margin-bottom: 5px;
+  padding-left: 5px;
+}
+
+.room__item-booking-datepicker input,
+.room__item-booking-input input {
+  height: 18px;
+  padding: 5px 10px;
+  font-size: 13px;
+  outline: none;
+}
+
+.room__item-booking-more-details {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 15px 25px;
+}
+
+.room__item-booking-more-details div:not(:last-child) {
+  margin-right: 15px;
+}
+
+.room__item-booking-more-info {
+  font-size: 12px;
+  font-weight: 200;
+  word-break: break-all;
+}
+
+.room__item-booking-form h1 {
+  font-size: 16px;
+  font-weight: 500;
+  margin: 10px 0 0 25px;
+  text-align: start;
+}
+
+.room__item-booking-user {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 auto;
+  width: 90%;
+  padding-top: 10px;
+}
+
+.room__item-booking-user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding-bottom: 10px;
+}
+
+.room__item-booking-user-info label {
+  font-size: 13px;
+  margin-bottom: 5px;
+  padding-left: 5px;
+}
+
+.room__item-booking-user-info input {
+  height: 18px;
+  padding: 5px 10px;
+  font-size: 13px;
+  outline: none;
+}
+
+.room__item-booking-payments {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 auto;
+  width: 80%;
+  padding: 10px 0 30px;
+}
+
+.room__item-booking-payment {
+  border-bottom: 1px solid #151d3b;
+  color: #151d3b;
+  padding: 7px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  height: 20px;
+  width: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  background-color: transparent;
+}
+
+.room__item-booking-payment.active {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.room__item-booking-payment:hover {
+  font-size: 15px;
+}
+
+.room__item-booking-actions {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.room__item-booking-actions button {
+  width: 120px;
+  height: 40px;
+  outline: none;
+  background-color: #151d3b;
+  color: #fff;
+  border: 1px solid #151d3b;
+  cursor: pointer;
+  margin-bottom: 25px;
+}
+
+.room__item-booking-actions button:first-child {
+  color: #151d3b;
+  background-color: #fff;
+  border: 1px solid #151d3b;
+}

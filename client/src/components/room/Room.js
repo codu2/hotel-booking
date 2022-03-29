@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import "./Room.css";
 import RoomItem from "./RoomItem";
@@ -56,6 +56,8 @@ const DUMMY_ROOMS = [
 ];
 
 const Rooms = () => {
+  const [backdrop, setBackdrop] = useState(false);
+
   return (
     <div className="room__container">
       <div className="room__wrapper">
@@ -93,10 +95,11 @@ const Rooms = () => {
         </div>
         <div className="room">
           {DUMMY_ROOMS.map((room) => (
-            <RoomItem key={room.id} room={room} />
+            <RoomItem key={room.id} room={room} setBackdrop={setBackdrop} />
           ))}
         </div>
       </div>
+      {backdrop && <div className="room__item-booking-backdrop" />}
     </div>
   );
 };
