@@ -1,0 +1,30 @@
+.category__container {
+  width: 100%;
+  height: calc(100vh - 601px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.category__container li {
+  border: 1px solid #151d3b;
+  color: #151d3b;
+  background-color: #fff;
+  padding: 15px 20px;
+  border-radius: 30px;
+  font-size: 15px;
+  font-weight: 800;
+  text-transform: capitalize;
+  margin: 0 2rem;
+  cursor: pointer;
+  width: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.category__container li:hover {
+  background-color: #151d3b;
+  color: #fff;
+  border: 1px solid #151d3b;
+}
