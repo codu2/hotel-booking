@@ -1,0 +1,33 @@
+.contact__button {
+  position: fixed;
+  top: 80%;
+  right: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.contact__button button {
+  outline: none;
+  width: 45px;
+  height: 45px;
+  color: #000;
+  background-color: #fff;
+  border: none;
+  border-radius: 45px;
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease 0s;
+  cursor: pointer;
+  margin-top: 12px;
+}
+
+.contact__button button svg {
+  font-size: 18px;
+}
+
+.contact__button button:hover {
+  background-color: #d82148;
+  box-shadow: 0px 15px 20px #bb7080;
+  color: #fff;
+  transform: translateY(-7px);
+}

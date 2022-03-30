@@ -4,6 +4,7 @@ import { Outlet } from "react-router-dom";
 import Header from "./Header";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import ActionButton from "./ActionButton";
 
 const Layout = () => {
   return (
@@ -18,6 +19,7 @@ const Layout = () => {
       <footer>
         <Footer />
       </footer>
+      <ActionButton />
     </div>
   );
 };

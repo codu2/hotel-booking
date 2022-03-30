@@ -42,12 +42,21 @@ const Room = ({ room, setBackdrop }) => {
     }
 
     console.log({
+      room: room.title,
       username: userInfo.username,
       phoneNumber: userInfo.phoneNumber,
       payment: payment,
       startDate: startDate,
       endDate: endDate,
       number: number,
+      price: Number(
+        number.adults + number.children > room.info[0]
+          ? (
+              room.price +
+              8.27 * (number.adults + number.children - room.info[0])
+            ).toFixed(2)
+          : room.price
+      ),
     });
   };
 
