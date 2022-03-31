@@ -25,9 +25,33 @@
 }
 
 .contact__info p {
-  font-size: 15px;
+  font-size: 13px;
   color: #ddd;
-  margin-bottom: 15px;
+  line-height: 21px;
+  font-weight: 300;
+}
+
+.contact__info span {
+  font-size: 14px;
+  color: #f4f4f4;
+  margin: 20px 0 15px;
+}
+
+.contact__info-input {
+  color: #fff;
+  font-weight: 300;
+  font-size: 13px;
+}
+
+.contact__info-input label {
+  margin: 0 10px;
+}
+
+.contact__info-input input {
+  outline: none;
+  padding: 3px 6px;
+  font-size: 13px;
+  border: none;
 }
 
 .contact__info button {
@@ -37,7 +61,7 @@
   padding: 10px 15px;
   border: none;
   font-weight: 700;
-  margin-top: 10px;
+  margin-top: 20px;
   cursor: pointer;
 }
 
@@ -142,7 +166,7 @@
   height: 40px;
 }
 
-.contact__form-input-emoji {
+.contact__form-input-picture {
   width: 50px;
   height: 40px;
   display: flex;
@@ -153,7 +177,7 @@
   cursor: pointer;
 }
 
-.contact__form-input-emoji svg {
+.contact__form-input-picture svg {
   font-size: 22px;
 }
 
@@ -185,4 +209,43 @@
 
 .contact__form-input-wrapper button svg {
   font-size: 22px;
+}
+
+.contact__form-chat {
+  width: 100%;
+  min-height: 400px;
+  padding-top: 10px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.contact__form-chat-default {
+  width: 45%;
+  height: 40px;
+  margin: 10px 0 0 10px;
+}
+
+.contact__form-chat-default-info {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.contact__form-chat-default-info img {
+  width: 35px;
+  height: 35px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+.contact__form-chat-default-chat {
+  font-size: 12px;
+  background-color: #e1e1e1;
+  padding: 5px 10px;
+  color: #151d3b;
+  border-radius: 10px;
+  word-break: break-all;
 }
