@@ -11,7 +11,6 @@ let users = [];
 const addUser = ({ id, name, room }) => {
   name = name.trim().toLowerCase();
   room = room.trim().toLowerCase();
-  //각 문자열의 공백을 없애고 소문자로 만들어줌
 
   const user = { id, name, room };
 
@@ -26,7 +25,7 @@ const removeUser = (id) => {
 
 const getUser = (id) => users.find((user) => user.id === id);
 
-const getUsersInRoom = (room) => users.filter((user) => user.room === room);
+//const getUsersInRoom = (room) => users.filter((user) => user.room === room);
 
 io.on("connection", (socket) => {
   socket.on("join", ({ name, room }) => {
@@ -59,12 +58,14 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     const user = removeUser(socket.id);
 
+    /*
     if (user) {
       io.to(user.room).emit("message", {
         user: "admin",
         text: `${user.name} has left.`,
       });
     }
+    */
   });
 });
 
