@@ -16,68 +16,52 @@ const Contact = () => {
     name: "",
     phoneNumber: "",
   });
+
   const [socket, setSocket] = useState(null);
-  const [chat, setChat] = useState("");
-  const [notification, setNotification] = useState([]);
-  const [receiver, setReceiver] = useState(
-    userInfo.name === "housnap" ? "john" : "housnap"
-  );
+  const [name, setName] = useState("");
+  const [room, setRoom] = useState("housnap");
+  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState([]);
 
   useEffect(() => {
     setSocket(io("http://localhost:5000"));
   }, []);
 
   useEffect(() => {
-    socket?.emit("newUser", userInfo.name);
-  }, [socket, userInfo]);
+    socket?.emit("join", { name, room });
+  }, [startChat === true]);
 
   useEffect(() => {
-    socket?.on("notification", (data) => {
-      setNotification((prev) => [
-        ...prev,
-        {
-          sender: data.name,
-          chat: data.chat,
-        },
-      ]);
+    socket?.on("message", (message) => {
+      setMessages((prev) => [...prev, message]);
     });
   }, [socket]);
 
   const handleInfo = (event) => {
     event.preventDefault();
 
-    setUserInfo({
-      ...userInfo,
-      [event.target.name]: event.target.value,
-    });
+    setName(event.target.value);
   };
 
   const handleChatForm = (event) => {
     event.preventDefault();
 
-    if (userInfo.name.length !== 0 && userInfo.phoneNumber.length !== 0) {
-      setStartChat(true);
-    } else {
-      window.alert("Please enter both your name and phone number.");
-    }
+    setStartChat(true);
   };
 
   const handleChat = (event) => {
     event.preventDefault();
 
-    setChat(event.target.value);
+    setMessage(event.target.value);
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    setChat("");
-
-    socket?.emit("sendChat", {
-      name: userInfo.name,
-      receiver,
-      chat: chat,
-    });
+    if (message) {
+      socket?.emit("sendMessage", message);
+      setMessage("");
+    }
   };
 
   return (
@@ -114,7 +98,7 @@ const Contact = () => {
                 type="text"
                 name="phoneNumber"
                 id="phoneNumber"
-                onChange={handleInfo}
+                //onChange={handleInfo}
               />
             </div>
             <button onClick={handleChatForm}>Start Online Chat</button>
@@ -145,33 +129,22 @@ const Contact = () => {
               </div>
             </div>
             <div className="contact__form-chat">
-              <div className="contact__form-chat-default">
-                <div className="contact__form-chat-default-info">
-                  <img
-                    src={`https://images.unsplash.com/photo-1517840901100-8179e982acb7?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80`}
-                    alt="housnap reception img"
-                  />
-                  <div className="contact__form-chat-default-chat">
-                    <div>
-                      Hello, <span>{userInfo.name}</span>. <br /> What kind of
-                      help do you?
+              <div className="contact__form-chat-message-form">
+                {messages.length > 0 &&
+                  messages.map((message) => (
+                    <div className="contact__form-chat-message">
+                      <div className="contact__form-chat-message-info">
+                        <div className="contact__form-chat-message-chat">
+                          <div>{message.text}</div>
+                        </div>
+                        <img
+                          src={`https://images.unsplash.com/photo-1517400508447-f8dd518b86db?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NjZ8fHRyYXZlbHxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=700&q=60`}
+                          alt="user img"
+                        />
+                      </div>
                     </div>
-                  </div>
-                </div>
+                  ))}
               </div>
-              {notification.map((data) => (
-                <div className="contact__form-chat-default">
-                  <div className="contact__form-chat-default-info">
-                    <img
-                      src={`https://images.unsplash.com/photo-1517840901100-8179e982acb7?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80`}
-                      alt="housnap reception img"
-                    />
-                    <div className="contact__form-chat-default-chat">
-                      <div>{data.chat}</div>
-                    </div>
-                  </div>
-                </div>
-              ))}
             </div>
             <div className="contact__form-input">
               <div className="contact__form-input-wrapper">
@@ -182,7 +155,10 @@ const Contact = () => {
                   type="text"
                   placeholder="Start Chatting"
                   onChange={handleChat}
-                  value={chat}
+                  value={message}
+                  onKeyPress={(event) =>
+                    event.key === "Enter" ? handleSubmit(event) : null
+                  }
                 />
                 <button onClick={handleSubmit}>
                   <AiOutlineSend />
@@ -197,3 +173,5 @@ const Contact = () => {
 };
 
 export default Contact;
+
+// /chat?name=${name}&room=${room}

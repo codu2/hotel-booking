@@ -8,33 +8,63 @@ const io = new Server({
 
 let users = [];
 
-const addNewUser = (name, socketId) => {
-  !users.some((user) => user.name === name) && users.push({ name, socketId });
+const addUser = ({ id, name, room }) => {
+  name = name.trim().toLowerCase();
+  room = room.trim().toLowerCase();
+  //각 문자열의 공백을 없애고 소문자로 만들어줌
+
+  const user = { id, name, room };
+
+  users.push(user);
+
+  return user;
 };
 
-const findUser = (name) => {
-  return users.find((user) => user.name === name);
+const removeUser = (id) => {
+  users = users.filter((user) => user.id !== id);
 };
 
-const removeUser = (socketId) => {
-  users = users.filter((user) => user.socketId !== socketId);
-};
+const getUser = (id) => users.find((user) => user.id === id);
+
+const getUsersInRoom = (room) => users.filter((user) => user.room === room);
 
 io.on("connection", (socket) => {
-  socket.on("newUser", (name) => {
-    addNewUser(name, socket.id);
+  socket.on("join", ({ name, room }) => {
+    const user = addUser({ id: socket.id, name, room });
+
+    socket.join(user.room);
+
+    socket.emit("message", {
+      user: "admin",
+      text: `${user.name}, welcome to the room ${user.room}`,
+    });
+
+    socket.emit("message", {
+      user: "admin",
+      text: `what kind of help do you?`,
+    });
+
+    /*
+    socket.broadcast
+      .to(user.room)
+      .emit("message", { user: "admin", text: `${user.name}, has joined!` });
+    */
   });
 
-  socket.on("sendChat", ({ name, receiver, chat }) => {
-    const receiveUser = findUser(receiver);
-    io.to(receiveUser.socketId).emit("notification", {
-      name,
-      chat,
-    });
+  socket.on("sendMessage", (message) => {
+    const user = getUser(socket.id);
+    io.to(user.room).emit("message", { user: user.name, text: message });
   });
 
   socket.on("disconnect", () => {
-    removeUser(socket.id);
+    const user = removeUser(socket.id);
+
+    if (user) {
+      io.to(user.room).emit("message", {
+        user: "admin",
+        text: `${user.name} has left.`,
+      });
+    }
   });
 });
 
