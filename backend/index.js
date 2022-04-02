@@ -35,7 +35,7 @@ db.once("open", () => {
 const bookedSchema = new mongoose.Schema({
   room: "string",
   username: "string",
-  phoneNumber: "number",
+  phoneNumber: "string",
   payment: "number",
   startDate: "string",
   endDate: "string",

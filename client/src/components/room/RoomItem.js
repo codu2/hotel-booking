@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import { useSelector, useDispatch } from "react-redux";
-import { subDays, addDays } from "date-fns";
+import { subDays, addDays, getDate } from "date-fns";
 import axios from "axios";
 
 import "react-datepicker/dist/react-datepicker.css";
@@ -10,10 +10,11 @@ import { MdOutlinePeople, MdOutlineBed } from "react-icons/md";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import { RiReservedLine } from "react-icons/ri";
 import { HiOutlineHashtag } from "react-icons/hi";
+import { bookActions } from "../../store/book-slice";
 
-const Room = ({ room, setBackdrop }) => {
+const RoomItem = ({ room, setBackdrop }) => {
   const dispatch = useDispatch();
-  const booked = useSelector((state) => state.booked);
+  const booked = useSelector((state) => state.book.booked);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(
     new Date(
@@ -33,19 +34,21 @@ const Room = ({ room, setBackdrop }) => {
     username: "",
     phoneNumber: "",
   });
+  const [filterStartDate, setFilterStartDate] = useState(null);
+  const [filterEndDate, setFilterEndDate] = useState(null);
 
-  useEffect(async () => {
-    const fetchBooked = await axios.get("http://localhost:8080/booked");
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const fetchBooked = await axios.get("http://localhost:8080/booked");
+        dispatch(bookActions.getBooked(fetchBooked.data));
+      } catch (err) {
+        console.log(err);
+      }
+    };
 
-    try {
-      dispatch({
-        type: "SUCCESS",
-        payload: fetchBooked.data,
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  }, []);
+    fetchData();
+  }, [dispatch]);
 
   useEffect(() => {
     const start = new Date(
@@ -76,9 +79,8 @@ const Room = ({ room, setBackdrop }) => {
       /*connect paypal payment system*/
     }
 
-    dispatch({
-      type: "BOOKING",
-      payload: {
+    dispatch(
+      bookActions.addBooked({
         room: room.title,
         username: userInfo.username,
         phoneNumber: userInfo.phoneNumber,
@@ -97,8 +99,8 @@ const Room = ({ room, setBackdrop }) => {
             : (room.price * range).toFixed(2)
         ),
         img: room.img,
-      },
-    });
+      })
+    );
 
     await axios.post("http://localhost:8080/booked", {
       room: room.title,
@@ -137,6 +139,47 @@ const Room = ({ room, setBackdrop }) => {
 
     setBackdrop(true);
     setOpenDatePicker(true);
+  };
+
+  useEffect(() => {
+    if (openDatePicker === true) {
+      for (let i = 0; i < booked.length; i++) {
+        if (booked[i].room === room.title) {
+          setFilterStartDate(new Date(booked[i].startDate));
+          setFilterEndDate(new Date(booked[i].endDate));
+        }
+      }
+    }
+  }, [openDatePicker, booked, room.title]);
+
+  let sdt;
+  let edt;
+
+  if (openDatePicker) {
+    if (filterStartDate) {
+      sdt = new Date(
+        filterStartDate.getFullYear(),
+        filterStartDate.getMonth(),
+        filterStartDate.getDate()
+      );
+    }
+
+    if (filterEndDate) {
+      edt = new Date(
+        filterEndDate.getFullYear(),
+        filterEndDate.getMonth(),
+        filterEndDate.getDate()
+      );
+    }
+  }
+
+  const handleFilter = (date) => {
+    if (filterStartDate && filterEndDate) {
+      const filtersdt = getDate(sdt);
+      const filteredt = getDate(edt);
+      const filterDate = getDate(date);
+      return filterDate !== filtersdt && filterDate !== filteredt;
+    }
   };
 
   return (
@@ -229,7 +272,8 @@ const Room = ({ room, setBackdrop }) => {
                 id="check_in"
                 showPopperArrow={false} //No Anchor Arrow
                 minDate={subDays(new Date(), 0)} //Min Date
-                maxDate={addDays(new Date(), 30)}
+                maxDate={addDays(new Date(), 60)}
+                filterDate={handleFilter}
               />
             </div>
             <div>
@@ -243,7 +287,8 @@ const Room = ({ room, setBackdrop }) => {
                 minDate={startDate}
                 id="check_out"
                 showPopperArrow={false}
-                maxDate={addDays(new Date(), 30)} // Max Date
+                maxDate={addDays(new Date(), 60)} // Max Date
+                filterDate={handleFilter}
               />
             </div>
           </div>
@@ -364,4 +409,4 @@ const Room = ({ room, setBackdrop }) => {
   );
 };
 
-export default Room;
+export default RoomItem;

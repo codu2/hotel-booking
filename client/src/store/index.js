@@ -1,3 +1,4 @@
+/*
 import { createStore } from "redux";
 
 const initialState = {
@@ -12,7 +13,7 @@ const reducer = (state = initialState, action) => {
   if (action.type === "SUCCESS") {
     return {
       ...state,
-      booked: action.payload.map((booking) => booking),
+      booked: [...action.payload],
     };
   }
 
@@ -31,5 +32,18 @@ const reducer = (state = initialState, action) => {
 };
 
 const store = createStore(reducer);
+
+export default store;
+*/
+
+import { configureStore } from "@reduxjs/toolkit";
+
+import bookSlice from "./book-slice";
+
+const store = configureStore({
+  reducer: {
+    book: bookSlice,
+  },
+});
 
 export default store;
