@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import { useSelector, useDispatch } from "react-redux";
 import { subDays, addDays } from "date-fns";
+import axios from "axios";
 
 import "react-datepicker/dist/react-datepicker.css";
 import "./RoomItem.css";
@@ -33,6 +34,19 @@ const Room = ({ room, setBackdrop }) => {
     phoneNumber: "",
   });
 
+  useEffect(async () => {
+    const fetchBooked = await axios.get("http://localhost:8080/booked");
+
+    try {
+      dispatch({
+        type: "SUCCESS",
+        payload: fetchBooked.data,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
+
   useEffect(() => {
     const start = new Date(
       startDate.getFullYear(),
@@ -49,7 +63,7 @@ const Room = ({ room, setBackdrop }) => {
     setRange(getRange);
   }, [endDate, startDate]);
 
-  const handlePayment = (type) => {
+  const handlePayment = async (type) => {
     if (type === 0) {
       /*booking information confirm*/
     }
@@ -63,32 +77,49 @@ const Room = ({ room, setBackdrop }) => {
     }
 
     dispatch({
-      type: "booking",
-      payload: [
-        {
-          room: room.title,
-          username: userInfo.username,
-          phoneNumber: userInfo.phoneNumber,
-          payment: payment,
-          startDate: startDate,
-          endDate: endDate,
-          headcount: headcount,
-          price: Number(
-            headcount.adults + headcount.children > room.info[0]
-              ? (
-                  (room.price +
-                    8.27 *
-                      (headcount.adults + headcount.children - room.info[0])) *
-                  range
-                ).toFixed(2)
-              : (room.price * range).toFixed(2)
-          ),
-        },
-      ],
+      type: "BOOKING",
+      payload: {
+        room: room.title,
+        username: userInfo.username,
+        phoneNumber: userInfo.phoneNumber,
+        payment: payment,
+        startDate: startDate,
+        endDate: endDate,
+        headcount: headcount,
+        price: Number(
+          headcount.adults + headcount.children > room.info[0]
+            ? (
+                (room.price +
+                  8.27 *
+                    (headcount.adults + headcount.children - room.info[0])) *
+                range
+              ).toFixed(2)
+            : (room.price * range).toFixed(2)
+        ),
+        img: room.img,
+      },
+    });
+
+    await axios.post("http://localhost:8080/booked", {
+      room: room.title,
+      username: userInfo.username,
+      phoneNumber: userInfo.phoneNumber,
+      payment: payment,
+      startDate: startDate,
+      endDate: endDate,
+      headcount: headcount,
+      price: Number(
+        headcount.adults + headcount.children > room.info[0]
+          ? (
+              (room.price +
+                8.27 * (headcount.adults + headcount.children - room.info[0])) *
+              range
+            ).toFixed(2)
+          : (room.price * range).toFixed(2)
+      ),
+      img: room.img,
     });
   };
-
-  console.log(booked);
 
   const handleUserInfo = (event) => {
     setUserInfo({ ...userInfo, [event.target.name]: event.target.value });
@@ -198,6 +229,7 @@ const Room = ({ room, setBackdrop }) => {
                 id="check_in"
                 showPopperArrow={false} //No Anchor Arrow
                 minDate={subDays(new Date(), 0)} //Min Date
+                maxDate={addDays(new Date(), 30)}
               />
             </div>
             <div>
