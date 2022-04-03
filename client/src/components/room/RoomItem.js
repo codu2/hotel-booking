@@ -11,6 +11,7 @@ import { AiOutlineShoppingCart } from "react-icons/ai";
 import { RiReservedLine } from "react-icons/ri";
 import { HiOutlineHashtag } from "react-icons/hi";
 import { bookActions } from "../../store/book-slice";
+import PaymentForm from "../payment/PaymentForm";
 
 const RoomItem = ({ room, setBackdrop }) => {
   const dispatch = useDispatch();
@@ -36,6 +37,7 @@ const RoomItem = ({ room, setBackdrop }) => {
   });
   const [filterStartDate, setFilterStartDate] = useState(null);
   const [filterEndDate, setFilterEndDate] = useState(null);
+  const [openPayment, setOpenPayment] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,6 +52,7 @@ const RoomItem = ({ room, setBackdrop }) => {
     fetchData();
   }, [dispatch]);
 
+  /*
   useEffect(() => {
     const start = new Date(
       startDate.getFullYear(),
@@ -65,8 +68,11 @@ const RoomItem = ({ room, setBackdrop }) => {
     const getRange = Math.abs(getTime / (1000 * 60 * 60 * 24));
     setRange(getRange);
   }, [endDate, startDate]);
-
+  */
   const handlePayment = async (type) => {
+    setOpenDatePicker(false);
+    setOpenPayment(true);
+
     if (type === 0) {
       /*booking information confirm*/
     }
@@ -78,7 +84,7 @@ const RoomItem = ({ room, setBackdrop }) => {
     if (type === 2) {
       /*connect paypal payment system*/
     }
-
+    /*
     dispatch(
       bookActions.addBooked({
         room: room.title,
@@ -101,7 +107,7 @@ const RoomItem = ({ room, setBackdrop }) => {
         img: room.img,
       })
     );
-
+    
     await axios.post("http://localhost:8080/booked", {
       room: room.title,
       username: userInfo.username,
@@ -121,6 +127,7 @@ const RoomItem = ({ room, setBackdrop }) => {
       ),
       img: room.img,
     });
+    */
   };
 
   const handleUserInfo = (event) => {
@@ -152,6 +159,7 @@ const RoomItem = ({ room, setBackdrop }) => {
     }
   }, [openDatePicker, booked, room.title]);
 
+  /*
   let sdt;
   let edt;
 
@@ -181,6 +189,47 @@ const RoomItem = ({ room, setBackdrop }) => {
       return filterDate !== filtersdt && filterDate !== filteredt;
     }
   };
+  */
+
+  const [excludeDates, setExcludeDates] = useState([]);
+  const [onlyCheckout, setOnlyCheckout] = useState(null);
+  const [maxDate, setMaxDate] = useState(false);
+
+  useEffect(() => {
+    let dates = [];
+    for (let i = 0; i <= range; i++) {
+      dates.push(addDays(filterStartDate, i));
+    }
+    setExcludeDates(dates);
+  }, [openDatePicker, filterStartDate]);
+
+  const handleDateChange = (dates) => {
+    const [start, end] = dates;
+    setStartDate(start);
+    setEndDate(end);
+
+    setOnlyCheckout(
+      new Date(
+        excludeDates[0].getFullYear(),
+        excludeDates[0].getMonth(),
+        excludeDates[0].getDate() - 1
+      )
+    );
+  };
+
+  useEffect(() => {
+    if (onlyCheckout) {
+      const clickStartDate = startDate.toDateString();
+
+      const clickOnlyCheckout = onlyCheckout.toDateString();
+
+      if (clickOnlyCheckout === clickStartDate) {
+        setMaxDate(true);
+      } else {
+        setMaxDate(false);
+      }
+    }
+  }, [startDate]);
 
   return (
     <div className="room__item__container">
@@ -226,7 +275,7 @@ const RoomItem = ({ room, setBackdrop }) => {
           Book Now
         </button>
       </div>
-      {openDatePicker && (
+      {openDatePicker && !openPayment && (
         <div className="room__item-booking-form">
           <div className="room__item-booking-info">
             <img src={room.img} alt={room.title} />
@@ -251,45 +300,28 @@ const RoomItem = ({ room, setBackdrop }) => {
               </div>
             </div>
           </div>
+          <div className="datepicker">
+            <h1>select date : </h1>
+            <DatePicker
+              selected={startDate}
+              onChange={handleDateChange}
+              startDate={startDate}
+              endDate={endDate}
+              selectsRange
+              inline
+              excludeDates={excludeDates}
+              minDate={subDays(new Date(), 0)}
+              maxDate={maxDate && addDays(onlyCheckout, 0)}
+            />
+          </div>
           <div className="room__item-booking-datepicker">
             <div>
-              <label htmlFor="check_in">Check-In</label>
-              <DatePicker
-                selected={startDate}
-                onChange={(date) => {
-                  setStartDate(date);
-                  setEndDate(
-                    new Date(
-                      date.getFullYear(),
-                      date.getMonth(),
-                      date.getDate() + 1
-                    )
-                  );
-                }}
-                selectsStart
-                startDate={startDate}
-                endDate={endDate}
-                id="check_in"
-                showPopperArrow={false} //No Anchor Arrow
-                minDate={subDays(new Date(), 0)} //Min Date
-                maxDate={addDays(new Date(), 60)}
-                filterDate={handleFilter}
-              />
+              <span>Check-In</span>
+              <span>{startDate && startDate.toDateString()}</span>
             </div>
             <div>
-              <label htmlFor="check_out">Check-Out</label>
-              <DatePicker
-                selected={endDate}
-                onChange={(date) => setEndDate(date)}
-                selectsEnd
-                startDate={startDate}
-                endDate={endDate}
-                minDate={startDate}
-                id="check_out"
-                showPopperArrow={false}
-                maxDate={addDays(new Date(), 60)} // Max Date
-                filterDate={handleFilter}
-              />
+              <span>Check-Out</span>
+              <span>{endDate && endDate.toDateString()}</span>
             </div>
           </div>
           <div className="room__item-booking-more-details">
@@ -405,8 +437,57 @@ const RoomItem = ({ room, setBackdrop }) => {
           </div>
         </div>
       )}
+      {openPayment && !openDatePicker && (
+        <div className="room__item-payment-form">
+          <PaymentForm />
+        </div>
+      )}
     </div>
   );
 };
 
 export default RoomItem;
+
+/*
+<div className="room__item-booking-datepicker">
+  <div>
+    <label htmlFor="check_in">Check-In</label>
+    <DatePicker
+      selected={startDate}
+      onChange={(date) => {
+        setStartDate(date);
+        setEndDate(
+          new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1)
+        );
+      }}
+      selectsStart
+      startDate={startDate}
+      endDate={endDate}
+      id="check_in"
+      showPopperArrow={false} No Anchor Arrow
+      minDate={subDays(new Date(), 0)} Min Date
+      maxDate={addDays(new Date(), 60)}
+      //filterDate={handleFilter}
+      //excludeDates={[addDays(filterStartDate, range)]}
+      excludeDates={excludeDates}
+    />
+  </div>
+  <div>
+    <label htmlFor="check_out">Check-Out</label>
+    <DatePicker
+      selected={endDate}
+      onChange={(date) => setEndDate(date)}
+      selectsEnd
+      startDate={startDate}
+      endDate={endDate}
+      minDate={startDate}
+      id="check_out"
+      showPopperArrow={false}
+      maxDate={addDays(new Date(), 60)}  //Max Date
+      //filterDate={handleFilter}
+      //excludeDates={[addDays(filterStartDate, range)]}
+      excludeDates={excludeDates}
+    />
+  </div>
+</div>;
+*/

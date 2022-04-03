@@ -196,8 +196,9 @@
 .room__item-booking-datepicker {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 25px;
+  justify-content: flex-start;
+  padding: 0 35px;
+  column-gap: 70px;
 }
 
 .room__item-booking-datepicker > div,
@@ -333,4 +334,93 @@
   color: #151d3b;
   background-color: #fff;
   border: 1px solid #151d3b;
+}
+
+/**/
+
+.datepicker {
+  width: 100%;
+}
+
+.datepicker p {
+  font-size: 15px;
+  font-weight: 500;
+  margin: 10px 0 0 35px;
+  text-align: start;
+}
+
+.react-datepicker {
+  margin: 10px 70px;
+}
+
+.room__item-booking-datepicker > div > span:first-child {
+  margin-bottom: 5px;
+  font-size: 12px;
+  font-weight: 300;
+}
+
+.room__item-booking-datepicker > div > span:last-child {
+  margin-bottom: 5px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.react-datepicker__header {
+  background-color: #f0f0f0;
+  color: #151d3b;
+}
+
+.react-datepicker__navigation-icon::before {
+  border-color: #151d3b;
+  border-width: 1.5px 1.5px 0 0;
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--in-range {
+  border-radius: 50%;
+  background-color: #151d3b;
+  color: #f0f0f0;
+}
+
+.react-datepicker__day--disabled {
+  text-decoration: line-through;
+}
+
+.react-datepicker__day--selected:hover {
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  color: #151d3b;
+}
+
+.react-datepicker__day:hover,
+.react-datepicker__month-text:hover,
+.react-datepicker__quarter-text:hover,
+.react-datepicker__year-text:hover,
+.react-datepicker__day--in-selecting-range:not(.react-datepicker__day--in-range, .react-datepicker__month-text--in-range, .react-datepicker__quarter-text--in-range, .react-datepicker__year-text--in-range),
+.react-datepicker__day--in-selecting-range:hover {
+  background-color: #151d3b;
+  color: #f0f0f0;
+  border-radius: 50%;
+}
+
+.react-datepicker__day--keyboard-selected,
+.react-datepicker__month-text--keyboard-selected,
+.react-datepicker__quarter-text--keyboard-selected,
+.react-datepicker__year-text--keyboard-selected {
+  background-color: transparent;
+  color: #151d3b;
+  border-radius: 0;
+}
+.room__item-payment-form {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  height: 500px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  background-color: #fff;
+  border-radius: 1rem;
+  z-index: 99;
 }
