@@ -4,6 +4,7 @@ const bookSlice = createSlice({
   name: "book",
   initialState: {
     booked: [],
+    bookedInfo: {},
   },
   reducers: {
     getBooked(state, action) {
@@ -11,6 +12,9 @@ const bookSlice = createSlice({
     },
     addBooked(state, action) {
       state.booked = [...state.booked, action.payload];
+    },
+    addBookedInfo(state, action) {
+      state.bookedInfo = action.payload;
     },
   },
 });

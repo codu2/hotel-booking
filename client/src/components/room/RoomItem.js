@@ -38,6 +38,7 @@ const RoomItem = ({ room, setBackdrop }) => {
   const [filterStartDate, setFilterStartDate] = useState(null);
   const [filterEndDate, setFilterEndDate] = useState(null);
   const [openPayment, setOpenPayment] = useState(false);
+  const [paymentType, setPaymentType] = useState(1);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -73,20 +74,10 @@ const RoomItem = ({ room, setBackdrop }) => {
     setOpenDatePicker(false);
     setOpenPayment(true);
 
-    if (type === 0) {
-      /*booking information confirm*/
-    }
+    setPaymentType(type);
 
-    if (type === 1) {
-      /*connect credit card payment system*/
-    }
-
-    if (type === 2) {
-      /*connect paypal payment system*/
-    }
-    /*
     dispatch(
-      bookActions.addBooked({
+      bookActions.addBookedInfo({
         room: room.title,
         username: userInfo.username,
         phoneNumber: userInfo.phoneNumber,
@@ -107,7 +98,8 @@ const RoomItem = ({ room, setBackdrop }) => {
         img: room.img,
       })
     );
-    
+
+    /*
     await axios.post("http://localhost:8080/booked", {
       room: room.title,
       username: userInfo.username,
@@ -194,6 +186,7 @@ const RoomItem = ({ room, setBackdrop }) => {
   const [excludeDates, setExcludeDates] = useState([]);
   const [onlyCheckout, setOnlyCheckout] = useState(null);
   const [maxDate, setMaxDate] = useState(false);
+  const [maxDateNumber, setMaxDateNumber] = useState(0);
 
   useEffect(() => {
     let dates = [];
@@ -201,7 +194,7 @@ const RoomItem = ({ room, setBackdrop }) => {
       dates.push(addDays(filterStartDate, i));
     }
     setExcludeDates(dates);
-  }, [openDatePicker, filterStartDate]);
+  }, [openDatePicker, filterStartDate, range]);
 
   const handleDateChange = (dates) => {
     const [start, end] = dates;
@@ -223,13 +216,22 @@ const RoomItem = ({ room, setBackdrop }) => {
 
       const clickOnlyCheckout = onlyCheckout.toDateString();
 
+      const eveOnlyCheckout = new Date(
+        onlyCheckout.getFullYear(),
+        onlyCheckout.getMonth(),
+        onlyCheckout.getDate() - 1
+      ).toDateString();
+
       if (clickOnlyCheckout === clickStartDate) {
         setMaxDate(true);
+      } else if (eveOnlyCheckout === clickStartDate) {
+        setMaxDate(true);
+        setMaxDateNumber(1);
       } else {
         setMaxDate(false);
       }
     }
-  }, [startDate]);
+  }, [startDate, onlyCheckout]);
 
   return (
     <div className="room__item__container">
@@ -311,7 +313,8 @@ const RoomItem = ({ room, setBackdrop }) => {
               inline
               excludeDates={excludeDates}
               minDate={subDays(new Date(), 0)}
-              maxDate={maxDate && addDays(onlyCheckout, 0)}
+              maxDate={maxDate && addDays(onlyCheckout, maxDateNumber)}
+              disabledKeyboardNavigation
             />
           </div>
           <div className="room__item-booking-datepicker">
@@ -439,7 +442,11 @@ const RoomItem = ({ room, setBackdrop }) => {
       )}
       {openPayment && !openDatePicker && (
         <div className="room__item-payment-form">
-          <PaymentForm />
+          <PaymentForm
+            setOpenDatePicker={setOpenDatePicker}
+            setOpenPayment={setOpenPayment}
+            type={paymentType}
+          />
         </div>
       )}
     </div>
