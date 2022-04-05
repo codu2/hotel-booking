@@ -54,34 +54,42 @@ const PaymentForm = ({ setOpenDatePicker, setOpenPayment, bookedInfo }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await axios.post("http://localhost:8080/booked", {
-      room: bookedInfo.room,
-      username: bookedInfo.username,
-      phoneNumber: bookedInfo.phoneNumber,
-      payment: {
-        name: credit.name,
-        number: credit.number,
-        expiry: credit.expiry,
-        cvc: credit.cvc,
-      },
-      startDate: bookedInfo.startDate,
-      endDate: bookedInfo.endDate,
-      headcount: bookedInfo.headcount,
-      price: bookedInfo.price,
-      img: bookedInfo.img,
-    });
+    const response = async () => {
+      await axios
+        .post("http://localhost:8080/booked", {
+          room: bookedInfo.room,
+          username: bookedInfo.username,
+          phoneNumber: bookedInfo.phoneNumber,
+          payment: {
+            name: credit.name,
+            number: credit.number,
+            expiry: credit.expiry,
+            cvc: credit.cvc,
+          },
+          startDate: bookedInfo.startDate,
+          endDate: bookedInfo.endDate,
+          headcount: bookedInfo.headcount,
+          price: bookedInfo.price,
+          img: bookedInfo.img,
+        })
+        .then((res) => {
+          setCredit({
+            number: "",
+            name: "",
+            expiry: "",
+            cvc: "",
+            issuer: "",
+            focused: "",
+          });
 
-    setCredit({
-      number: "",
-      name: "",
-      expiry: "",
-      cvc: "",
-      issuer: "",
-      focused: "",
-    });
+          setOpenPayment(false);
+          navigate("/");
+          window.alert("Your reservation has been successfully completed.");
+        })
+        .catch((err) => console.log(err));
+    };
 
-    setOpenPayment(false);
-    navigate("/");
+    response();
   };
 
   return (
@@ -158,7 +166,9 @@ const PaymentForm = ({ setOpenDatePicker, setOpenPayment, bookedInfo }) => {
             >
               Prev
             </button>
-            <button className="form-button">Pay</button>
+            <button className="form-button" type="submit">
+              Pay
+            </button>
           </div>
         </form>
       </div>

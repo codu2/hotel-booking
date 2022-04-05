@@ -80,6 +80,8 @@ app.post("/booked", (req, res) => {
       console.log(data);
     }
   });
+
+  res.status(200).json(res.data);
 });
 
 app.get("/booked", (req, res) => {
