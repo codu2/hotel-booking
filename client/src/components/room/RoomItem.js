@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import { useSelector, useDispatch } from "react-redux";
-import { subDays, addDays, getDate } from "date-fns";
+import { subDays, addDays } from "date-fns";
 import axios from "axios";
 
 import "react-datepicker/dist/react-datepicker.css";
@@ -16,6 +16,7 @@ import PaymentForm from "../payment/PaymentForm";
 const RoomItem = ({ room, setBackdrop }) => {
   const dispatch = useDispatch();
   const booked = useSelector((state) => state.book.booked);
+  const bookedInfo = useSelector((state) => state.book.bookedInfo);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(
     new Date(
@@ -82,8 +83,8 @@ const RoomItem = ({ room, setBackdrop }) => {
         username: userInfo.username,
         phoneNumber: userInfo.phoneNumber,
         payment: payment,
-        startDate: startDate,
-        endDate: endDate,
+        startDate: startDate.toString(),
+        endDate: endDate.toString(),
         headcount: headcount,
         price: Number(
           headcount.adults + headcount.children > room.info[0]
@@ -98,28 +99,6 @@ const RoomItem = ({ room, setBackdrop }) => {
         img: room.img,
       })
     );
-
-    /*
-    await axios.post("http://localhost:8080/booked", {
-      room: room.title,
-      username: userInfo.username,
-      phoneNumber: userInfo.phoneNumber,
-      payment: payment,
-      startDate: startDate,
-      endDate: endDate,
-      headcount: headcount,
-      price: Number(
-        headcount.adults + headcount.children > room.info[0]
-          ? (
-              (room.price +
-                8.27 * (headcount.adults + headcount.children - room.info[0])) *
-              range
-            ).toFixed(2)
-          : (room.price * range).toFixed(2)
-      ),
-      img: room.img,
-    });
-    */
   };
 
   const handleUserInfo = (event) => {
@@ -446,6 +425,7 @@ const RoomItem = ({ room, setBackdrop }) => {
             setOpenDatePicker={setOpenDatePicker}
             setOpenPayment={setOpenPayment}
             type={paymentType}
+            bookedInfo={bookedInfo}
           />
         </div>
       )}
@@ -454,47 +434,3 @@ const RoomItem = ({ room, setBackdrop }) => {
 };
 
 export default RoomItem;
-
-/*
-<div className="room__item-booking-datepicker">
-  <div>
-    <label htmlFor="check_in">Check-In</label>
-    <DatePicker
-      selected={startDate}
-      onChange={(date) => {
-        setStartDate(date);
-        setEndDate(
-          new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1)
-        );
-      }}
-      selectsStart
-      startDate={startDate}
-      endDate={endDate}
-      id="check_in"
-      showPopperArrow={false} No Anchor Arrow
-      minDate={subDays(new Date(), 0)} Min Date
-      maxDate={addDays(new Date(), 60)}
-      //filterDate={handleFilter}
-      //excludeDates={[addDays(filterStartDate, range)]}
-      excludeDates={excludeDates}
-    />
-  </div>
-  <div>
-    <label htmlFor="check_out">Check-Out</label>
-    <DatePicker
-      selected={endDate}
-      onChange={(date) => setEndDate(date)}
-      selectsEnd
-      startDate={startDate}
-      endDate={endDate}
-      minDate={startDate}
-      id="check_out"
-      showPopperArrow={false}
-      maxDate={addDays(new Date(), 60)}  //Max Date
-      //filterDate={handleFilter}
-      //excludeDates={[addDays(filterStartDate, range)]}
-      excludeDates={excludeDates}
-    />
-  </div>
-</div>;
-*/

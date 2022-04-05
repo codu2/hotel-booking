@@ -14,7 +14,7 @@ const bookSlice = createSlice({
       state.booked = [...state.booked, action.payload];
     },
     addBookedInfo(state, action) {
-      state.bookedInfo = action.payload;
+      state.bookedInfo = Object.assign(state.bookedInfo, action.payload);
     },
   },
 });
