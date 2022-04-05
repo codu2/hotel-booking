@@ -36,8 +36,8 @@ const RoomItem = ({ room, setBackdrop }) => {
     username: "",
     phoneNumber: "",
   });
-  const [filterStartDate, setFilterStartDate] = useState(null);
-  const [filterEndDate, setFilterEndDate] = useState(null);
+  const [filterStartDate, setFilterStartDate] = useState([]);
+  const [filterEndDate, setFilterEndDate] = useState([]);
   const [openPayment, setOpenPayment] = useState(false);
   const [paymentType, setPaymentType] = useState(1);
 
@@ -54,23 +54,24 @@ const RoomItem = ({ room, setBackdrop }) => {
     fetchData();
   }, [dispatch]);
 
-  /*
   useEffect(() => {
-    const start = new Date(
-      startDate.getFullYear(),
-      startDate.getMonth(),
-      startDate.getDate()
-    );
-    const end = new Date(
-      endDate.getFullYear(),
-      endDate.getMonth(),
-      endDate.getDate()
-    );
-    const getTime = end.getTime() - start.getTime();
-    const getRange = Math.abs(getTime / (1000 * 60 * 60 * 24));
-    setRange(getRange);
+    if (startDate && endDate) {
+      const start = new Date(
+        startDate.getFullYear(),
+        startDate.getMonth(),
+        startDate.getDate()
+      );
+      const end = new Date(
+        endDate.getFullYear(),
+        endDate.getMonth(),
+        endDate.getDate()
+      );
+      const getTime = end.getTime() - start.getTime();
+      const getRange = Math.abs(getTime / (1000 * 60 * 60 * 24));
+      setRange(getRange);
+    }
   }, [endDate, startDate]);
-  */
+
   const handlePayment = async (type) => {
     setOpenDatePicker(false);
     setOpenPayment(true);
@@ -121,94 +122,107 @@ const RoomItem = ({ room, setBackdrop }) => {
 
   useEffect(() => {
     if (openDatePicker === true) {
-      for (let i = 0; i < booked.length; i++) {
-        if (booked[i].room === room.title) {
-          setFilterStartDate(new Date(booked[i].startDate));
-          setFilterEndDate(new Date(booked[i].endDate));
+      let filterStartDate = [];
+      let filterEndDate = [];
+      const thisRoom = booked.filter((book) => book.room === room.title);
+      if (thisRoom.length !== 0) {
+        for (const key in thisRoom) {
+          filterStartDate.push(new Date(thisRoom[key].startDate));
+          filterEndDate.push(new Date(thisRoom[key].endDate));
         }
+      } else {
+        filterStartDate = [];
+        filterEndDate = [];
       }
+      setFilterStartDate(filterStartDate);
+      setFilterEndDate(filterEndDate);
     }
-  }, [openDatePicker, booked, room.title]);
-
-  /*
-  let sdt;
-  let edt;
-
-  if (openDatePicker) {
-    if (filterStartDate) {
-      sdt = new Date(
-        filterStartDate.getFullYear(),
-        filterStartDate.getMonth(),
-        filterStartDate.getDate()
-      );
-    }
-
-    if (filterEndDate) {
-      edt = new Date(
-        filterEndDate.getFullYear(),
-        filterEndDate.getMonth(),
-        filterEndDate.getDate()
-      );
-    }
-  }
-
-  const handleFilter = (date) => {
-    if (filterStartDate && filterEndDate) {
-      const filtersdt = getDate(sdt);
-      const filteredt = getDate(edt);
-      const filterDate = getDate(date);
-      return filterDate !== filtersdt && filterDate !== filteredt;
-    }
-  };
-  */
+  }, [openDatePicker]);
 
   const [excludeDates, setExcludeDates] = useState([]);
-  const [onlyCheckout, setOnlyCheckout] = useState(null);
+  const [onlyCheckout, setOnlyCheckout] = useState([]);
   const [maxDate, setMaxDate] = useState(false);
+  const [maxDates, setMaxDates] = useState(null);
   const [maxDateNumber, setMaxDateNumber] = useState(0);
 
   useEffect(() => {
-    let dates = [];
-    for (let i = 0; i <= range; i++) {
-      dates.push(addDays(filterStartDate, i));
+    if (openDatePicker === true) {
+      if (filterStartDate && filterEndDate) {
+        let dates = [];
+        for (let i = 0; i < filterStartDate.length; i++) {
+          const getTime =
+            new Date(filterEndDate[i]).getTime() -
+            new Date(filterStartDate[i]).getTime();
+
+          let range = Math.abs(getTime / (1000 * 60 * 60 * 24));
+
+          for (let j = 0; j < range + 1; j++) {
+            dates.push(addDays(new Date(filterStartDate[i]), j));
+          }
+        }
+        setExcludeDates(dates);
+      }
     }
-    setExcludeDates(dates);
-  }, [openDatePicker, filterStartDate, range]);
+  }, [openDatePicker, filterStartDate, filterEndDate]);
 
   const handleDateChange = (dates) => {
     const [start, end] = dates;
     setStartDate(start);
     setEndDate(end);
 
-    setOnlyCheckout(
-      new Date(
-        excludeDates[0].getFullYear(),
-        excludeDates[0].getMonth(),
-        excludeDates[0].getDate() - 1
-      )
-    );
+    let onlyCheckoutArray = [];
+    for (let i = 0; i < filterStartDate.length; i++) {
+      onlyCheckoutArray.push(
+        new Date(
+          filterStartDate[i].getFullYear(),
+          filterStartDate[i].getMonth(),
+          filterStartDate[i].getDate() - 1
+        )
+      );
+    }
+    setOnlyCheckout(onlyCheckoutArray);
   };
 
   useEffect(() => {
-    if (onlyCheckout) {
-      const clickStartDate = startDate.toDateString();
+    if (onlyCheckout.length !== 0) {
+      for (let i = 0; i < onlyCheckout.length; i++) {
+        const clickStartDate = new Date(
+          startDate.getFullYear(),
+          startDate.getMonth(),
+          startDate.getDate()
+        );
+        const clickOnlyCheckout = onlyCheckout[i];
 
-      const clickOnlyCheckout = onlyCheckout.toDateString();
+        const eveOnlyCheckout = new Date(
+          onlyCheckout[i].getFullYear(),
+          onlyCheckout[i].getMonth(),
+          onlyCheckout[i].getDate() - 1
+        );
 
-      const eveOnlyCheckout = new Date(
-        onlyCheckout.getFullYear(),
-        onlyCheckout.getMonth(),
-        onlyCheckout.getDate() - 1
-      ).toDateString();
-
-      if (clickOnlyCheckout === clickStartDate) {
-        setMaxDate(true);
-      } else if (eveOnlyCheckout === clickStartDate) {
-        setMaxDate(true);
-        setMaxDateNumber(1);
-      } else {
-        setMaxDate(false);
+        if (
+          clickOnlyCheckout.toDateString() === clickStartDate.toDateString()
+        ) {
+          setMaxDate(true);
+          break;
+        } else if (
+          eveOnlyCheckout.toDateString() === clickStartDate.toDateString()
+        ) {
+          setMaxDate(true);
+          setMaxDateNumber(1);
+          break;
+        } else {
+          setMaxDate(false);
+          setMaxDateNumber(0);
+        }
       }
+
+      setMaxDates(
+        new Date(
+          startDate.getFullYear(),
+          startDate.getMonth(),
+          startDate.getDate()
+        )
+      );
     }
   }, [startDate, onlyCheckout]);
 
@@ -292,7 +306,7 @@ const RoomItem = ({ room, setBackdrop }) => {
               inline
               excludeDates={excludeDates}
               minDate={subDays(new Date(), 0)}
-              maxDate={maxDate && addDays(onlyCheckout, maxDateNumber)}
+              maxDate={maxDate && addDays(maxDates, maxDateNumber)}
               disabledKeyboardNavigation
             />
           </div>
@@ -434,3 +448,35 @@ const RoomItem = ({ room, setBackdrop }) => {
 };
 
 export default RoomItem;
+
+/*
+  let sdt;
+  let edt;
+
+  if (openDatePicker) {
+    if (filterStartDate) {
+      sdt = new Date(
+        filterStartDate.getFullYear(),
+        filterStartDate.getMonth(),
+        filterStartDate.getDate()
+      );
+    }
+
+    if (filterEndDate) {
+      edt = new Date(
+        filterEndDate.getFullYear(),
+        filterEndDate.getMonth(),
+        filterEndDate.getDate()
+      );
+    }
+  }
+
+  const handleFilter = (date) => {
+    if (filterStartDate && filterEndDate) {
+      const filtersdt = getDate(sdt);
+      const filteredt = getDate(edt);
+      const filterDate = getDate(date);
+      return filterDate !== filtersdt && filterDate !== filteredt;
+    }
+  };
+  */
