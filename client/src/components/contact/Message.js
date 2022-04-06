@@ -3,13 +3,13 @@ import React from "react";
 import "./Message.css";
 
 const Message = ({ message: { user, text } }) => {
-  let isSentByUer = true;
+  let isSentByUser = true;
 
   if (user === "admin") {
-    isSentByUer = false;
+    isSentByUser = false;
   }
 
-  return isSentByUer ? (
+  return isSentByUser ? (
     <div className="contact__form-chat-message-form justifyEnd">
       <div className="contact__form-chat-message">
         <div className="contact__form-chat-message-info">

@@ -33,15 +33,17 @@ io.on("connection", (socket) => {
 
     socket.join(user.room);
 
-    socket.emit("message", {
-      user: "admin",
-      text: `${user.name}, welcome to the room ${user.room}`,
-    });
+    if (name !== "admin") {
+      socket.emit("message", {
+        user: "admin",
+        text: `${user.name}, welcome to the room ${user.room}`,
+      });
 
-    socket.emit("message", {
-      user: "admin",
-      text: `what kind of help do you?`,
-    });
+      socket.emit("message", {
+        user: "admin",
+        text: `what kind of help do you?`,
+      });
+    }
 
     /*
     socket.broadcast

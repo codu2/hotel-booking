@@ -35,6 +35,10 @@
   margin-left: 5px;
 }
 
+.contact__form-chat-message-form.justifyStart .contact__form-chat-message-info {
+  justify-content: flex-start;
+}
+
 .contact__form-chat-message-form.justifyStart
   .contact__form-chat-message-info
   img {
