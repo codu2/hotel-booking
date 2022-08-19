@@ -2,8 +2,8 @@
   width: 100%;
   height: 40px;
   border-bottom: 1px solid #000;
-  background-color: #151d3b;
-  color: #fff;
+  background-color: #fff;
+  color: #151d3b;
 }
 
 .header__container-wrapper {
@@ -23,8 +23,7 @@ table td {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-left: 1px solid #fff;
-  padding: 0 10px;
+  padding: 0 5px;
 }
 
 .header__container-info {
@@ -37,11 +36,11 @@ table td {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .header__container-info td svg {
-  font-size: 18px;
+  font-size: 16px;
 }
 
 .header__container-social {
