@@ -3,6 +3,7 @@ import DatePicker from "react-datepicker";
 import { useSelector, useDispatch } from "react-redux";
 import { subDays, addDays } from "date-fns";
 import axios from "axios";
+import { AnimatePresence, motion } from "framer-motion";
 
 import "react-datepicker/dist/react-datepicker.css";
 import "./RoomItem.css";
@@ -226,6 +227,27 @@ const RoomItem = ({ room, setBackdrop }) => {
     }
   }, [startDate, onlyCheckout]);
 
+  const dropIn = {
+    hidden: {
+      y: "-100vh",
+      opacity: 0,
+    },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.2,
+        type: "spring",
+        damping: 25,
+        stiffness: 500,
+      },
+    },
+    exit: {
+      y: "100vh",
+      opacity: 0,
+    },
+  };
+
   return (
     <div className="room__item__container">
       <div className="room__item-img">
@@ -263,176 +285,198 @@ const RoomItem = ({ room, setBackdrop }) => {
           </span>
           <span>Cart</span>
         </button>
-        <button onClick={handleBooking}>
+        <motion.button onClick={handleBooking}>
           <span>
             <RiReservedLine />
           </span>
           Book Now
-        </button>
+        </motion.button>
       </div>
-      {openDatePicker && !openPayment && (
-        <div className="room__item-booking-form">
-          <div className="room__item-booking-info">
-            <img src={room.img} alt={room.title} />
-            <div className="room__item-booking-info-details">
-              <div className="room__item-booking-info_title">{room.title}</div>
-              <div className="room__item-booking-info_price">
-                <span>1 night</span> {room.price}
+      <AnimatePresence
+        initial={false}
+        exitBeforeEnter={true}
+        onExitComplete={() => null}
+      >
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          {openDatePicker && !openPayment && (
+            <motion.div
+              variants={dropIn}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="room__item-booking-form"
+            >
+              <div className="room__item-booking-info">
+                <img src={room.img} alt={room.title} />
+                <div className="room__item-booking-info-details">
+                  <div className="room__item-booking-info_title">
+                    {room.title}
+                  </div>
+                  <div className="room__item-booking-info_price">
+                    <span>1 night</span> {room.price}
+                  </div>
+                  <div>
+                    <div>
+                      <MdOutlinePeople />
+                      {room.info[0]}
+                    </div>
+                    <div>
+                      <MdOutlineBed />
+                      {room.info[1]}
+                    </div>
+                    <div>
+                      <HiOutlineHashtag />
+                      {room.info[2]}
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div>
+              <div className="datepicker">
+                <h1>select date : </h1>
+                <DatePicker
+                  selected={startDate}
+                  onChange={handleDateChange}
+                  startDate={startDate}
+                  endDate={endDate}
+                  selectsRange
+                  inline
+                  excludeDates={excludeDates}
+                  minDate={subDays(new Date(), 0)}
+                  maxDate={maxDate && addDays(maxDates, maxDateNumber)}
+                  disabledKeyboardNavigation
+                />
+              </div>
+              <div className="room__item-booking-datepicker">
                 <div>
-                  <MdOutlinePeople />
-                  {room.info[0]}
+                  <span>Check-In</span>
+                  <span>{startDate && startDate.toDateString()}</span>
                 </div>
                 <div>
-                  <MdOutlineBed />
-                  {room.info[1]}
-                </div>
-                <div>
-                  <HiOutlineHashtag />
-                  {room.info[2]}
+                  <span>Check-Out</span>
+                  <span>{endDate && endDate.toDateString()}</span>
                 </div>
               </div>
-            </div>
-          </div>
-          <div className="datepicker">
-            <h1>select date : </h1>
-            <DatePicker
-              selected={startDate}
-              onChange={handleDateChange}
-              startDate={startDate}
-              endDate={endDate}
-              selectsRange
-              inline
-              excludeDates={excludeDates}
-              minDate={subDays(new Date(), 0)}
-              maxDate={maxDate && addDays(maxDates, maxDateNumber)}
-              disabledKeyboardNavigation
-            />
-          </div>
-          <div className="room__item-booking-datepicker">
-            <div>
-              <span>Check-In</span>
-              <span>{startDate && startDate.toDateString()}</span>
-            </div>
-            <div>
-              <span>Check-Out</span>
-              <span>{endDate && endDate.toDateString()}</span>
-            </div>
-          </div>
-          <div className="room__item-booking-more-details">
-            <div className="room__item-booking-input">
-              <label htmlFor="adults">Adults</label>
-              <input
-                onChange={handleCount}
-                name="adults"
-                type="number"
-                id="adults"
-                placeholder="0"
-                min="0"
-              />
-            </div>
-            <div className="room__item-booking-input">
-              <label htmlFor="children">Children</label>
-              <input
-                onChange={handleCount}
-                name="children"
-                type="number"
-                id="children"
-                placeholder="0"
-                min="0"
-              />
-            </div>
-            <div className="room__item-booking-more-info">
-              If you exceed the number of people, you will be charged more than
-              $8.27 each.
-            </div>
-          </div>
-          <h1>{`user : ${userInfo.username && userInfo.username}`}</h1>
-          <div className="room__item-booking-user">
-            <div className="room__item-booking-user-info">
-              <label htmlFor="username">Username</label>
-              <input
-                type="text"
-                placeholder="ex) John Doe"
-                name="username"
-                id="username"
-                onChange={handleUserInfo}
-              />
-            </div>
-            <div className="room__item-booking-user-info">
-              <label htmlFor="phoneNumber">Phone Number</label>
-              <input
-                type="text"
-                placeholder="0123456789"
-                name="phoneNumber"
-                id="phoneNumber"
-                onChange={handleUserInfo}
-              />
-            </div>
-          </div>
-          <h1>{`payment : $${
-            headcount.adults + headcount.children > room.info[0]
-              ? (
-                  (room.price +
-                    8.27 *
-                      (headcount.adults + headcount.children - room.info[0])) *
-                  range
-                ).toFixed(2)
-              : (room.price * range).toFixed(2)
-          }`}</h1>
-          <div className="room__item-booking-payments">
-            <div
-              className={`room__item-booking-payment ${
-                payment === 0 && "active"
-              }`}
-              onClick={() => setPayment(0)}
-            >
-              cash
-            </div>
-            <div
-              className={`room__item-booking-payment ${
-                payment === 1 && "active"
-              }`}
-              onClick={() => setPayment(1)}
-            >
-              credit
-            </div>
-            <div
-              className={`room__item-booking-payment ${
-                payment === 2 && "active"
-              }`}
-              onClick={() => setPayment(2)}
-            >
-              paypal
-            </div>
-          </div>
-          <div className="room__item-booking-actions">
-            <button
-              onClick={() => {
-                setStartDate(new Date());
-                setEndDate(
-                  new Date(
-                    startDate.getFullYear(),
-                    startDate.getMonth(),
-                    startDate.getDate() + 1
-                  )
-                );
-                setPayment(1);
-                setUserInfo({
-                  username: "",
-                  phoneNumber: "",
-                });
-                setBackdrop(false);
-                setOpenDatePicker(false);
-              }}
-            >
-              Cancel
-            </button>
-            <button onClick={() => handlePayment(payment)}>Payment</button>
-          </div>
-        </div>
-      )}
+              <div className="room__item-booking-more-details">
+                <div className="room__item-booking-input">
+                  <label htmlFor="adults">Adults</label>
+                  <input
+                    onChange={handleCount}
+                    name="adults"
+                    type="number"
+                    id="adults"
+                    placeholder="0"
+                    min="0"
+                  />
+                </div>
+                <div className="room__item-booking-input">
+                  <label htmlFor="children">Children</label>
+                  <input
+                    onChange={handleCount}
+                    name="children"
+                    type="number"
+                    id="children"
+                    placeholder="0"
+                    min="0"
+                  />
+                </div>
+                <div className="room__item-booking-more-info">
+                  If you exceed the number of people, you will be charged more
+                  than $8.27 each.
+                </div>
+              </div>
+              <h1>{`user : ${userInfo.username && userInfo.username}`}</h1>
+              <div className="room__item-booking-user">
+                <div className="room__item-booking-user-info">
+                  <label htmlFor="username">Username</label>
+                  <input
+                    type="text"
+                    placeholder="ex) John Doe"
+                    name="username"
+                    id="username"
+                    onChange={handleUserInfo}
+                  />
+                </div>
+                <div className="room__item-booking-user-info">
+                  <label htmlFor="phoneNumber">Phone Number</label>
+                  <input
+                    type="text"
+                    placeholder="0123456789"
+                    name="phoneNumber"
+                    id="phoneNumber"
+                    onChange={handleUserInfo}
+                  />
+                </div>
+              </div>
+              <h1>{`payment : $${
+                headcount.adults + headcount.children > room.info[0]
+                  ? (
+                      (room.price +
+                        8.27 *
+                          (headcount.adults +
+                            headcount.children -
+                            room.info[0])) *
+                      range
+                    ).toFixed(2)
+                  : (room.price * range).toFixed(2)
+              }`}</h1>
+              <div className="room__item-booking-payments">
+                <div
+                  className={`room__item-booking-payment ${
+                    payment === 0 && "active"
+                  }`}
+                  onClick={() => setPayment(0)}
+                >
+                  cash
+                </div>
+                <div
+                  className={`room__item-booking-payment ${
+                    payment === 1 && "active"
+                  }`}
+                  onClick={() => setPayment(1)}
+                >
+                  credit
+                </div>
+                <div
+                  className={`room__item-booking-payment ${
+                    payment === 2 && "active"
+                  }`}
+                  onClick={() => setPayment(2)}
+                >
+                  paypal
+                </div>
+              </div>
+              <div className="room__item-booking-actions">
+                <button
+                  onClick={() => {
+                    setStartDate(new Date());
+                    setEndDate(
+                      new Date(
+                        startDate.getFullYear(),
+                        startDate.getMonth(),
+                        startDate.getDate() + 1
+                      )
+                    );
+                    setPayment(1);
+                    setUserInfo({
+                      username: "",
+                      phoneNumber: "",
+                    });
+                    setBackdrop(false);
+                    setOpenDatePicker(false);
+                  }}
+                >
+                  Cancel
+                </button>
+                <button onClick={() => handlePayment(payment)}>Payment</button>
+              </div>
+            </motion.div>
+          )}
+        </motion.div>
+      </AnimatePresence>
       {openPayment && !openDatePicker && (
         <div className="room__item-payment-form">
           <PaymentForm
@@ -443,6 +487,185 @@ const RoomItem = ({ room, setBackdrop }) => {
           />
         </div>
       )}
+      <AnimatePresence
+        initial={false}
+        exitBeforeEnter={true}
+        onExitComplete={() => null}
+      >
+        {openDatePicker && !openPayment && (
+          <motion.div
+            variants={dropIn}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="room__item-booking-form"
+          >
+            <div className="room__item-booking-info">
+              <img src={room.img} alt={room.title} />
+              <div className="room__item-booking-info-details">
+                <div className="room__item-booking-info_title">
+                  {room.title}
+                </div>
+                <div className="room__item-booking-info_price">
+                  <span>1 night</span> {room.price}
+                </div>
+                <div>
+                  <div>
+                    <MdOutlinePeople />
+                    {room.info[0]}
+                  </div>
+                  <div>
+                    <MdOutlineBed />
+                    {room.info[1]}
+                  </div>
+                  <div>
+                    <HiOutlineHashtag />
+                    {room.info[2]}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="datepicker">
+              <h1>select date : </h1>
+              <DatePicker
+                selected={startDate}
+                onChange={handleDateChange}
+                startDate={startDate}
+                endDate={endDate}
+                selectsRange
+                inline
+                excludeDates={excludeDates}
+                minDate={subDays(new Date(), 0)}
+                maxDate={maxDate && addDays(maxDates, maxDateNumber)}
+                disabledKeyboardNavigation
+              />
+            </div>
+            <div className="room__item-booking-datepicker">
+              <div>
+                <span>Check-In</span>
+                <span>{startDate && startDate.toDateString()}</span>
+              </div>
+              <div>
+                <span>Check-Out</span>
+                <span>{endDate && endDate.toDateString()}</span>
+              </div>
+            </div>
+            <div className="room__item-booking-more-details">
+              <div className="room__item-booking-input">
+                <label htmlFor="adults">Adults</label>
+                <input
+                  onChange={handleCount}
+                  name="adults"
+                  type="number"
+                  id="adults"
+                  placeholder="0"
+                  min="0"
+                />
+              </div>
+              <div className="room__item-booking-input">
+                <label htmlFor="children">Children</label>
+                <input
+                  onChange={handleCount}
+                  name="children"
+                  type="number"
+                  id="children"
+                  placeholder="0"
+                  min="0"
+                />
+              </div>
+              <div className="room__item-booking-more-info">
+                If you exceed the number of people, you will be charged more
+                than $8.27 each.
+              </div>
+            </div>
+            <h1>{`user : ${userInfo.username && userInfo.username}`}</h1>
+            <div className="room__item-booking-user">
+              <div className="room__item-booking-user-info">
+                <label htmlFor="username">Username</label>
+                <input
+                  type="text"
+                  placeholder="ex) John Doe"
+                  name="username"
+                  id="username"
+                  onChange={handleUserInfo}
+                />
+              </div>
+              <div className="room__item-booking-user-info">
+                <label htmlFor="phoneNumber">Phone Number</label>
+                <input
+                  type="text"
+                  placeholder="0123456789"
+                  name="phoneNumber"
+                  id="phoneNumber"
+                  onChange={handleUserInfo}
+                />
+              </div>
+            </div>
+            <h1>{`payment : $${
+              headcount.adults + headcount.children > room.info[0]
+                ? (
+                    (room.price +
+                      8.27 *
+                        (headcount.adults +
+                          headcount.children -
+                          room.info[0])) *
+                    range
+                  ).toFixed(2)
+                : (room.price * range).toFixed(2)
+            }`}</h1>
+            <div className="room__item-booking-payments">
+              <div
+                className={`room__item-booking-payment ${
+                  payment === 0 && "active"
+                }`}
+                onClick={() => setPayment(0)}
+              >
+                cash
+              </div>
+              <div
+                className={`room__item-booking-payment ${
+                  payment === 1 && "active"
+                }`}
+                onClick={() => setPayment(1)}
+              >
+                credit
+              </div>
+              <div
+                className={`room__item-booking-payment ${
+                  payment === 2 && "active"
+                }`}
+                onClick={() => setPayment(2)}
+              >
+                paypal
+              </div>
+            </div>
+            <div className="room__item-booking-actions">
+              <button
+                onClick={() => {
+                  setStartDate(new Date());
+                  setEndDate(
+                    new Date(
+                      startDate.getFullYear(),
+                      startDate.getMonth(),
+                      startDate.getDate() + 1
+                    )
+                  );
+                  setPayment(1);
+                  setUserInfo({
+                    username: "",
+                    phoneNumber: "",
+                  });
+                  setBackdrop(false);
+                  setOpenDatePicker(false);
+                }}
+              >
+                Cancel
+              </button>
+              <button onClick={() => handlePayment(payment)}>Payment</button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
