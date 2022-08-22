@@ -10,7 +10,7 @@ import "./RoomItem.css";
 import { MdOutlinePeople, MdOutlineBed } from "react-icons/md";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import { RiReservedLine } from "react-icons/ri";
-import { HiOutlineHashtag } from "react-icons/hi";
+import { HiOutlineHashtag, HiTranslate } from "react-icons/hi";
 import { bookActions } from "../../store/book-slice";
 import PaymentForm from "../payment/PaymentForm";
 
@@ -74,6 +74,19 @@ const RoomItem = ({ room, setBackdrop }) => {
   }, [endDate, startDate]);
 
   const handlePayment = async (type) => {
+    if (
+      (userInfo.username.length === 0) |
+      (userInfo.phoneNumber.length === 0) |
+      (2 < payment) |
+      !startDate |
+      !endDate |
+      (headcount.adults.length < 0) |
+      !headcount.adults
+    ) {
+      alert("Please check your information again");
+      return;
+    }
+
     setOpenDatePicker(false);
     setOpenPayment(true);
 
@@ -233,7 +246,7 @@ const RoomItem = ({ room, setBackdrop }) => {
       opacity: 0,
     },
     visible: {
-      y: 0,
+      y: "0",
       opacity: 1,
       transition: {
         duration: 0.2,
@@ -244,6 +257,27 @@ const RoomItem = ({ room, setBackdrop }) => {
     },
     exit: {
       y: "100vh",
+      opacity: 0,
+    },
+  };
+
+  const slideIn = {
+    hidden: {
+      x: "-100%",
+      opacity: 0,
+    },
+    visible: {
+      x: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.2,
+        type: "spring",
+        damping: 25,
+        stiffness: 500,
+      },
+    },
+    exit: {
+      x: "100%",
       opacity: 0,
     },
   };
@@ -477,16 +511,36 @@ const RoomItem = ({ room, setBackdrop }) => {
           )}
         </motion.div>
       </AnimatePresence>
-      {openPayment && !openDatePicker && (
-        <div className="room__item-payment-form">
-          <PaymentForm
-            setOpenDatePicker={setOpenDatePicker}
-            setOpenPayment={setOpenPayment}
-            type={paymentType}
-            bookedInfo={bookedInfo}
-          />
-        </div>
-      )}
+      <AnimatePresence
+        initial={false}
+        exitBeforeEnter={true}
+        onExitComplete={() => null}
+      >
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{
+            opacity: 1,
+          }}
+          exit={{ opacity: 0 }}
+        >
+          {openPayment && !openDatePicker && (
+            <motion.div
+              variants={slideIn}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="room__item-payment-form"
+            >
+              <PaymentForm
+                setOpenDatePicker={setOpenDatePicker}
+                setOpenPayment={setOpenPayment}
+                type={paymentType}
+                bookedInfo={bookedInfo}
+              />
+            </motion.div>
+          )}
+        </motion.div>
+      </AnimatePresence>
       <AnimatePresence
         initial={false}
         exitBeforeEnter={true}

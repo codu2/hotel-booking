@@ -1,6 +1,7 @@
 .room__item__container {
   width: calc((100% - 4rem) / 3);
   min-width: 300px;
+  max-width: 320px;
   height: max-content;
   border: 1px solid #dadbbd;
 }
@@ -103,9 +104,8 @@
 
 .room__item-booking-form {
   position: fixed;
-  top: 20%;
-  left: 25%;
-  transform: translateX(-25%);
+  top: 100px;
+  right: 100px;
   width: 400px;
   height: 500px;
   overflow-x: hidden;
@@ -414,9 +414,8 @@
 
 .room__item-payment-form {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  top: 100px;
+  right: 100px;
   width: 400px;
   height: 500px;
   overflow-x: hidden;
