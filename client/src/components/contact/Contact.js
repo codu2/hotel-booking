@@ -12,20 +12,16 @@ import {
 import Message from "./Message";
 
 const Contact = () => {
-  const [startChat, setStartChat] = useState(false);
-  const [userInfo, setUserInfo] = useState({
-    name: "",
-    phoneNumber: "",
-  });
-
-  const [socket, setSocket] = useState(null);
   const [name, setName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [startChat, setStartChat] = useState(false);
+  const [socket, setSocket] = useState(null);
   const [room, setRoom] = useState("housnap");
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    setSocket(io("http://localhost:5000"));
+    setSocket(io("http://localhost:5000", { transports: ["websocket"] }));
   }, []);
 
   useEffect(() => {
@@ -38,15 +34,25 @@ const Contact = () => {
     });
   }, [socket]);
 
-  const handleInfo = (event) => {
+  const handleName = (event) => {
     event.preventDefault();
 
     setName(event.target.value);
   };
 
+  const handlePhoneNumber = (event) => {
+    event.preventDefault();
+
+    setPhoneNumber(event.target.value);
+  };
+
   const handleChatForm = (event) => {
     event.preventDefault();
 
+    if ((name.length === 0) | (phoneNumber.length === 0)) {
+      alert("Please check your name and phone number");
+      return;
+    }
     setStartChat(true);
   };
 
@@ -89,8 +95,9 @@ const Contact = () => {
                 type="text"
                 name="name"
                 id="name"
-                onChange={handleInfo}
+                onChange={handleName}
                 autoComplete="off"
+                value={name}
               />
               <label htmlFor="phoneNumber" autoComplete="off">
                 Phone Number
@@ -99,7 +106,9 @@ const Contact = () => {
                 type="text"
                 name="phoneNumber"
                 id="phoneNumber"
-                //onChange={handleInfo}
+                onChange={handlePhoneNumber}
+                autoComplete="off"
+                value={phoneNumber}
               />
             </div>
             <button onClick={handleChatForm}>Start Online Chat</button>
@@ -109,11 +118,19 @@ const Contact = () => {
           <div className="contact__form">
             <div className="contact__form-user-wrapper">
               <div className="contact__form-user">
-                <img
-                  src={`https://images.unsplash.com/photo-1517840901100-8179e982acb7?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80`}
-                  alt="housnap img"
-                />
-                <div className="contact__form-user-name">{room}</div>
+                <div className="contact__form-user-img">
+                  {name === "admin" ? (
+                    <img
+                      src={`https://images.unsplash.com/photo-1517840901100-8179e982acb7?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80`}
+                      alt="housnap img"
+                    />
+                  ) : (
+                    name?.charAt(0)
+                  )}
+                </div>
+                <div className="contact__form-user-name">
+                  {name === "admin" ? "housnap" : name}
+                </div>
               </div>
               <div className="contact__form-action">
                 <div>
@@ -130,6 +147,15 @@ const Contact = () => {
               </div>
             </div>
             <div className="contact__form-chat">
+              <p
+                style={{
+                  textAlign: "center",
+                  color: "#afafaf",
+                  fontSize: "14px",
+                }}
+              >
+                Conversations are kept for up to 48 hours.
+              </p>
               {messages.length > 0 &&
                 messages.map((message, i) => (
                   <Message message={message} key={i} />

@@ -12,11 +12,11 @@
 .contact__form-chat-message {
   width: 45%;
   height: 40px;
-  margin: 25px 10px 0 0;
+  margin: 20px 10px 0 0;
 }
 
 .contact__form-chat-message-form.justifyStart .contact__form-chat-message {
-  margin: 25px 0 0 10px;
+  margin: 20px 0 0 10px;
 }
 
 .contact__form-chat-message-info {
@@ -48,9 +48,9 @@
 
 .contact__form-chat-message-chat {
   font-size: 12px;
-  background-color: #e1e1e1;
+  background-color: #f4f4f4;
   padding: 5px 10px;
   color: #151d3b;
   border-radius: 10px;
-  word-break: break-all;
+  word-break: keep-all;
 }
