@@ -33,7 +33,14 @@ io.on("connection", (socket) => {
 
     socket.join(user.room);
 
-    if (name !== "admin") {
+    if (
+      (name !== "admin" && getUser(socket.id).length === 0) |
+      (name === "admin")
+    ) {
+      socket.emit("alert", {
+        text: `${user.name} has entered the room`,
+      });
+    } else {
       socket.emit("message", {
         user: "admin",
         text: `${user.name}, welcome to the room ${user.room}`,
@@ -59,15 +66,15 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     const user = removeUser(socket.id);
+    console.log("disconnect");
 
-    /*
     if (user) {
       io.to(user.room).emit("message", {
         user: "admin",
         text: `${user.name} has left.`,
       });
+      socket.leave(user.name);
     }
-    */
   });
 });
 
